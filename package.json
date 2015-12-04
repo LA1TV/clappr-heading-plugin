@@ -1,6 +1,6 @@
 {
   "name": "clappr-heading-plugin",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A plugin for clappr which allows a clickable heading to be included inside the player.",
   "main": "dist/clappr-heading-plugin.js",
   "scripts": {

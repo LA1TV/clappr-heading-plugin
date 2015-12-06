@@ -81,11 +81,12 @@ export default class MarkersPlugin extends UICorePlugin {
       $container.click((e) => {
         // pause if something playing
         this.core.mediaControl.container.pause()
+        var resolvedLink = typeof(link) === "function" ? link() : link
         if (this._getOptions().openInNewWindow) {
-          window.open(link, "_blank")
+          window.open(resolvedLink, "_blank")
         }
         else {
-          window.location = link
+          window.location = resolvedLink
         }
         e.preventDefault()
         e.stopImmediatePropagation()

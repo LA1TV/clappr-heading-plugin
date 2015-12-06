@@ -26,13 +26,15 @@ var player = new Clappr.Player({
   },
   headingPlugin: {
     text: "Something really interesting",
-    hyperlink: "http://google.com", // optional
+    hyperlink: "http://google.com", // optional, can also be a callback
     openInNewWindow: true // optional
   }
 });
 ```
 
 The `text` option is the text you want in the heading, `hyperlink` is optional and is the page the user should be taken to if they click the heading. If `hyperlink` is provided then it will default to opening the hyperlink in the same window, but if you set `openInNewWindow` to `true`, the browser will navigate to the hyperlink in a new window instead. The media that is playing is automatically paused when the link is clicked.
+
+`hyperlink` can also be a callback, and wwhen this is the case the value which is returned is used as the hyperlink.
 
 # Demo
 To run the demo start a web server with the root directory being the root of this repo, and then browse to the "index.html" file in the "demo" folder.

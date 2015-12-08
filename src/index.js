@@ -22,7 +22,6 @@ export default class MarkersPlugin extends UICorePlugin {
     this._text = options.text || ""
     this._openInNewWindow = !!options.openInNewWindow
     this._visible = false
-    this._oldContainer = null
     this._renderPlugin()
 
     // so that it fades in on load

@@ -15,18 +15,38 @@ export default class MarkersPlugin extends UICorePlugin {
     super(core)
     this._mediaControlVisible = false
     this._stopped = true
-    this._enabled = false
+    this._ready = false
+    var options = this._getOptions()
+    this._enabled = typeof(options.enabled) === "undefined" || !!options.enabled
+    this._hyperlink = options.hyperlink
+    this._text = options.text || ""
+    this._openInNewWindow = !!options.openInNewWindow
+    this._visible = false
+    this._oldContainer = null
     this._renderPlugin()
 
     // so that it fades in on load
     this._enableTimeoutId = setTimeout(() => {
       this._enableTimeoutId = null
-      this._enabled = true
+      this._ready = true
       this._renderPlugin()
     }, 0)
   }
 
   bindEvents() {
+    this._bindContainerEvents()
+    this.listenTo(this.core.mediaControl, Events.MEDIACONTROL_CONTAINERCHANGED, this._onMediaControlContainerChanged)
+  }
+
+  _bindContainerEvents() {
+    if (this._oldContainer) {
+      this.stopListening(this._oldContainer, Events.CONTAINER_MEDIACONTROL_SHOW, this._onMediaControlShow)
+      this.stopListening(this._oldContainer, Events.CONTAINER_MEDIACONTROL_HIDE, this._onMediaControlHide)
+      this.stopListening(this._oldContainer, Events.CONTAINER_STOP, this._onStop)
+      this.stopListening(this._oldContainer, Events.CONTAINER_ENDED, this._onStop)
+      this.stopListening(this._oldContainer, Events.CONTAINER_PLAY, this._onPlay)
+    }
+    this._oldContainer = this.core.mediaControl.container
     this.listenTo(this.core.mediaControl.container, Events.CONTAINER_MEDIACONTROL_SHOW, this._onMediaControlShow)
     this.listenTo(this.core.mediaControl.container, Events.CONTAINER_MEDIACONTROL_HIDE, this._onMediaControlHide)
     this.listenTo(this.core.mediaControl.container, Events.CONTAINER_STOP, this._onStop)
@@ -39,6 +59,11 @@ export default class MarkersPlugin extends UICorePlugin {
       throw "'headingPlugin' property missing from options object."
     }
     return this.core.options.headingPlugin
+  }
+
+  _onMediaControlContainerChanged() {
+    this._bindContainerEvents()
+    this._appendElToContainer()
   }
 
   _onStop() {
@@ -62,38 +87,61 @@ export default class MarkersPlugin extends UICorePlugin {
   }
 
   _renderPlugin() {
-    var show = this._enabled && (this._stopped || this._mediaControlVisible)
-    this._$headingContainer.attr("data-visible", show ? "1" : "0")
+    var show = this._ready && this._enabled && (this._stopped || this._mediaControlVisible)
+    this._visible = show
+    var $container = this._$headingContainer
+    this._$headingTxt.text(this._text)
+    if (this._hyperlink) {
+      $container.attr("data-clickable", "1")
+    }
+    else {
+      $container.attr("data-clickable", "0")
+    }
+    $container.attr("data-visible", show ? "1" : "0")
   }
 
   _appendElToContainer() {
     this.core.mediaControl.container.$el.append(this.el)
   }
 
+  setText(newText, newHyperlink=null) {
+    this._text = newText
+    this._hyperlink = newHyperlink
+    this._renderPlugin()
+  }
+
+  setEnabled(enabled) {
+    this._enabled = !!enabled
+    this._renderPlugin()
+  }
+
+  setOpenInNewWindow(openInNewWindow) {
+    this._openInNewWindow = !!openInNewWindow
+  }
+
   render() {
     var $el = $(this.el)
-    var txt = this._getOptions().text
-    var link = this._getOptions().hyperlink
     var $container = $("<div />").addClass("heading-container").attr("data-visible", "0")
     this._$headingContainer = $container
-    if (link) {
-      $container.attr("data-clickable", "1")
-      $container.click((e) => {
-        // pause if something playing
-        this.core.mediaControl.container.pause()
-        var resolvedLink = typeof(link) === "function" ? link() : link
-        if (this._getOptions().openInNewWindow) {
-          window.open(resolvedLink, "_blank")
-        }
-        else {
-          window.location = resolvedLink
-        }
-        e.preventDefault()
-        e.stopImmediatePropagation()
-      })
-    }
-    var $headingTxt = $("<span />").addClass("heading-txt").text(txt)
-    $container.append($headingTxt)
+    $container.click((e) => {
+      if (!this._visible || !this._hyperlink) {
+        return
+      }
+
+      // pause if something playing
+      this.core.mediaControl.container.pause()
+      var resolvedLink = typeof(this._hyperlink) === "function" ? this._hyperlink() : this._hyperlink
+      if (this._openInNewWindow) {
+        window.open(resolvedLink, "_blank")
+      }
+      else {
+        window.location = resolvedLink
+      }
+      e.preventDefault()
+      e.stopImmediatePropagation()
+    })
+    this._$headingTxt = $("<span />").addClass("heading-txt")
+    $container.append(this._$headingTxt)
     $el.append($container)
     this._appendElToContainer()
     return this

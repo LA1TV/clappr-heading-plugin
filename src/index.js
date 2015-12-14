@@ -2,7 +2,7 @@ import {UICorePlugin, Events} from 'clappr'
 import $ from 'jQuery'
 import './style.sass'
 
-export default class MarkersPlugin extends UICorePlugin {
+export default class HeadingPlugin extends UICorePlugin {
   get name() { return 'heading-plugin' }
 
   get attributes() {

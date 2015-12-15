@@ -33,7 +33,6 @@ export default class HeadingPlugin extends UICorePlugin {
   }
 
   bindEvents() {
-    this._bindContainerEvents()
     this.listenTo(this.core.mediaControl, Events.MEDIACONTROL_CONTAINERCHANGED, this._onMediaControlContainerChanged)
   }
 
@@ -142,7 +141,6 @@ export default class HeadingPlugin extends UICorePlugin {
     this._$headingTxt = $("<span />").addClass("heading-txt")
     $container.append(this._$headingTxt)
     $el.append($container)
-    this._appendElToContainer()
     return this
   }
 

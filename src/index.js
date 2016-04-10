@@ -1,5 +1,4 @@
-import {UICorePlugin, Events} from 'clappr'
-import $ from 'jQuery'
+import {UICorePlugin, Events, $} from 'clappr'
 import './style.sass'
 
 export default class HeadingPlugin extends UICorePlugin {

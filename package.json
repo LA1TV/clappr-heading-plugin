@@ -18,7 +18,6 @@
     "clean-webpack-plugin": "^0.1.8",
     "compass-mixins": "^0.12.7",
     "css-loader": "^0.18.0",
-    "jquery": "^2.1.4",
     "node-sass": "^3.3.3",
     "sass-loader": "^3.0.0",
     "style-loader": "^0.12.4",

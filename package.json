@@ -19,7 +19,7 @@
     "compass-mixins": "^0.12.7",
     "css-loader": "^0.18.0",
     "node-sass": "^3.3.3",
-    "sass-loader": "^3.0.0",
+    "sass-loader": "^3.2.2",
     "style-loader": "^0.12.4",
     "webpack": "^1.12.2"
   }
